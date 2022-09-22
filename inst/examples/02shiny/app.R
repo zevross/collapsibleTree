@@ -37,6 +37,15 @@ server <- function(input, output) {
      )
    })
    output$str <- renderPrint(str(input$node))
+
+   observeEvent(input$node, {
+      out <- input$node
+
+      print(paste0("NODE CLICKED: ", out, "\n"))
+
+      out
+   })
+
 }
 
 # Run the application
