@@ -195,18 +195,25 @@ HTMLWidgets.widget({
         // Hide the tooltip after clicking
         tooltip.transition()
         .duration(100)
-        .style('opacity', 0)
+        .style('opacity', 0);
         // Update Shiny inputs, if applicable
-        if (options.input) {
-          var nest = {},
-          obj = d;
+        // if (options.input) {
+        //   var nest = {},
+          // obj = d;
           // Navigate up the list and recursively find parental nodes
-          for (var n = d.depth; n > 0; n--) {
-            nest[options.hierarchy[n-1]] = obj.data.name
-            obj = obj.parent
-          }
-          Shiny.onInputChange(options.input, nest)
-        }
+          // for (var n = d.depth; n > 0; n--) {
+            // nest[options.hierarchy[n-1]] = obj.data.name;
+            // obj = obj.parent;
+          // }
+
+          // Shiny.forgetLastInputValue(options.input);
+          // debugger;
+
+          // Shiny.onInputChange(options.input, nest);
+        // } else {
+          // console.log("NO `options.input`");
+          // console.log("Options: ", options);
+        // }
       }
 
       // Show tooltip on mouseover
@@ -264,20 +271,27 @@ HTMLWidgets.widget({
         }
 
         // Optionally collapse after the second level
-        if (options.collapsed) root.children.forEach(collapse);
+        // if (options.collapsed) root.children.forEach(collapse);
+        root.children.forEach(collapse);
         update(root);
 
         // Collapse the node and all it's children
         function collapse(d) {
           // A collapsed data value was specified and is true
-          if(d.children && options.collapsed in d.data && !d.data[options.collapsed]) {
-            d.children.forEach(collapse)
-          } else if(d.children) {
-            d._children = d.children
-            d._children.forEach(collapse)
-            d.children = null
-          }
+          // if(d.children && options.collapsed in d.data && !d.data[options.collapsed]) {
+            // d.children.forEach(collapse)
+          // } else if(d.children) {
+          //   d._children = d.children
+          //   d._children.forEach(collapse)
+          //   d.children = null
+          if (d.children) {
+  			    d._children = d.children;
+  			    d._children.forEach(collapse);
+  			    d.children = null;
+  			  }
+
         }
+        // }
       },
 
       resize: function(width, height) {
