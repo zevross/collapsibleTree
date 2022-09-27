@@ -165,11 +165,56 @@ HTMLWidgets.widget({
       })
       .remove();
 
+      // Returns a flattened hierarchy containing all leaf nodes under the root.
+          function flatten(root) {
+            var nodes = [];
+
+            function recurse(node) {
+              if (node.children){
+                node.children.forEach(recurse);
+              }else{
+                item={
+                      node_name: node.colname,
+                      node_data: node.name,
+                      node_id: node.id,
+                      node_depth: node.depth,
+                      parent_name: node.parent.colname,
+                      parent_id: node.parent.id,
+                      parent_depth: node.parent.depth
+                };
+                nodes.push(item);
+              }
+            }
+
+            recurse(root);
+            return {children: nodes};
+          }
+
+
       // Store the old positions for transition.
       nodes.forEach(function(d){
         d.x0 = d.x;
         d.y0 = d.y;
       });
+
+      // debugger;
+
+      // return data to Shiny (from `d3Tree`)
+      var nodes1 = treemap(root);
+      var nodes2 = flatten(root);
+
+      console.log(nodes1);
+      console.log(nodes2);
+
+      if (typeof(Shiny) !== "undefined") {
+
+         // console.log("d3tree.js #1");
+
+          Shiny.onInputChange(el.id + "_update",{
+            ".nodesData": JSON.decycle(nodes1),
+            ".nodesNew": JSON.stringify(nodes2)
+          });
+       }
 
       // Creates a curved (diagonal) path from parent to the child nodes
       function diagonal(s, d) {
@@ -242,6 +287,9 @@ HTMLWidgets.widget({
 
     return {
       renderValue: function(x) {
+
+        debugger;
+
         // Assigns parent, children, height, depth
         root = d3.hierarchy(x.data, function(d) { return d.children; });
         root.x0 = height / 2;
