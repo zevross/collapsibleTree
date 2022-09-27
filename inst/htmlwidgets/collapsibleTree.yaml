@@ -7,3 +7,7 @@ dependencies:
     version: 0.1.6
     src: "htmlwidgets/lib"
     stylesheet: collapsibleTree.css
+  - name: cycle
+    version: 0.0.1
+    src: htmlwidgets/cycle
+    script: cycle.js
