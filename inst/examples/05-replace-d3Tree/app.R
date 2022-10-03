@@ -1,8 +1,9 @@
 library(shiny)
 library(shinySelect)
 library(dplyr)
-library(d3Tree)
-library(collapsibleTree)
+# library(d3Tree)
+# library(collapsibleTree)
+devtools::load_all("../../../../collapsibleTree")
 library(data.table)
 library(data.tree)
 library(datasets)
@@ -171,18 +172,18 @@ server <- function(input, output, session) {
 
     browser()
 
-    network$nodes <- unlist(input$d3_update$.nodesData)
-    activeNode <- input$d3_update$.activeNode
-    if (!is.null(activeNode))
-      network$click <- jsonlite::fromJSON(activeNode)
+    network$nodes <- unlist(input$d3_update$.nodesData$data)
+    # activeNode <- input$d3_update$.activeNode
+    # if (!is.null(activeNode))
+    #   network$click <- jsonlite::fromJSON(activeNode)
   }, ignoreNULL = FALSE, ignoreInit = FALSE)
 
-  output$clickView <- renderTable({
-    req({as.data.table(network$click)})
-
-    # browser()
-
-  }, caption = 'Last Clicked Node', caption.placement = 'top')
+  # output$clickView <- renderTable({
+  #   req({as.data.table(network$click)})
+  #
+  #   # browser()
+  #
+  # }, caption = 'Last Clicked Node', caption.placement = 'top')
 
   toListen <- reactive({
 
@@ -197,19 +198,20 @@ server <- function(input, output, session) {
 
     # observeEvent(input$d3_update, {
 
-    browser()
+    # browser()
 
     if (is.null(network$nodes)) {
       data_dict
+      columns <- names(data_dict)
     } else{
       columns <- names(data_dict)
       if (!is.null(input$Selected)) {
         columns <- input$Selected
       }
 
-      browser()
+      # browser()
 
-      filterStatements <- tree.filter(network$nodes, data_tree)
+      filterStatements <- d3Tree::tree.filter(network$nodes, data_tree)
       filterStatements$FILTER <- gsub(
         pattern = rootName,
         replacement = variables[1],
@@ -368,13 +370,13 @@ server <- function(input, output, session) {
       selectedCols <- input$Hierarchy
     }
 
-    # browser()
+    browser()
 
     collapsibleTree::collapsibleTree(
       df = data_tree[, .SD, .SDcols=selectedCols][, "dummy.col" := ''],
       hierarchy = selectedCols,
       root = "ABCD",
-      height = 18,
+      # height = 18,
 
       tooltip = TRUE,
       # zoomable = TRUE,
@@ -397,148 +399,148 @@ server <- function(input, output, session) {
 
   })
 
-  output$filteredTableOut <- reactable::renderReactable({
-
-    if (is.null(network$nodes)) {
-      out <- data_dict
-    } else{
-      columns <- names(data_dict)
-      if (!is.null(input$Selected)) {
-        columns <- input$Selected
-      }
-
-      browser()
-
-      filterStatements <- tree.filter(network$nodes, data_tree)
-      filterStatements$FILTER <- gsub(
-        pattern = rootName,
-        replacement = variables[1],
-        x = filterStatements$FILTER
-      )
-      # remove n=... filter
-      filterStatements$FILTER <- gsub(
-        pattern = "&n=='.*'",
-        replacement = "",
-        x = filterStatements$FILTER
-      )
-      network$filterStatements <- filterStatements
-      data_dict <- data_dict %>%
-        filter_(
-          paste0(
-            network$filterStatements$FILTER,
-            collapse = " | "
-          )
-        ) %>%
-        select(columns)
-
-      column_def <- list(
-        table = reactable::colDef(show = FALSE),
-        var_name = reactable::colDef(
-          name = "Variable Name",
-          minWidth = 150,
-          cell = function(value, index) {
-            table <- data_dict$table[index]
-            table <- if (!is.na(table)) table else "Unknown"
-            div(
-              div(
-                style = list(
-                  fontFamily = "Hasklug Nerd Font Mono",
-                  fontWeight = 600
-                ),
-                value
-              ),
-              div(style = list(fontSize = 12), table)
-            )
-          }
-        ),
-        var_label = reactable::colDef(
-          name = "Variable Label",
-          minWidth = 300
-        ),
-        nda_var_name = reactable::colDef(
-          name = "NDA Variable Name",
-          style = list(
-            fontColor = "gray"
-          ),
-        ),
-        nda_table = reactable::colDef(
-          name = "NDA Table"
-        ),
-        domain = reactable::colDef(
-          name = "Domain"
-        ),
-        recipient = reactable::colDef(
-          name = "Recipient"
-        ),
-        instrument = reactable::colDef(
-          name = "Instrument"
-        ),
-        assessment = reactable::colDef(
-          name = "Assessment"
-        ),
-        var_label_short = reactable::colDef(
-          name = "Variable Label (Short)"
-        ),
-        type = reactable::colDef(
-          name = "Type"
-        )
-      )
-
-      column_def <- column_def[names(column_def) %in% columns]
-
-      browser()
-
-      out <- reactable::reactable(
-        data_dict,
-        columns = column_def,
-        # defaultColDef = reactable::colDef(
-        #   filterInput = function(values, name) {
-        #     if (name %in% c("instrument", "table")) {
-        #       data_list_filter_1("table-select")(values, name)
-        #     } else if (name %in% c("domain", "recipient", "assessment", "type")) {
-        #       data_list_filter_2("table-select")(values, name)
-        #     }
-        #   }
-        # ),
-        theme = reactable::reactableTheme(
-          cellStyle = list(
-            display = "flex",
-            flexDirection = "column",
-            justifyContent = "center"
-          ),
-          stripedColor = "#f0f5f9",
-          highlightColor = "#f0f5f9",
-          searchInputStyle = list(width = "100%")
-        ),
-        language = reactable::reactableLang(
-          searchPlaceholder = paste0(
-            "Enter string to filter all columns of the data dictionary at ",
-            "once or use the column-specific filter options below..."
-          )
-        ),
-        selection = "multiple",
-        onClick = "select",
-        striped = FALSE,
-        highlight = TRUE,
-        compact = TRUE,
-        searchable = TRUE,
-        filterable = TRUE,
-        showSortable = TRUE,
-        resizable = TRUE,
-        wrap = FALSE,
-        defaultPageSize = 50,
-        elementId = "table-select"
-      )
-    }
-
-    out
-  })
-
   # output$filteredTableOut <- reactable::renderReactable({
-  #   browser()
   #
-  #   filteredTable()
+  #   if (is.null(network$nodes)) {
+  #     out <- data_dict
+  #   } else{
+  #     columns <- names(data_dict)
+  #     if (!is.null(input$Selected)) {
+  #       columns <- input$Selected
+  #     }
+  #
+  #     browser()
+  #
+  #     filterStatements <- d3Tree::tree.filter(network$nodes, data_tree)
+  #     filterStatements$FILTER <- gsub(
+  #       pattern = rootName,
+  #       replacement = variables[1],
+  #       x = filterStatements$FILTER
+  #     )
+  #     # remove n=... filter
+  #     filterStatements$FILTER <- gsub(
+  #       pattern = "&n=='.*'",
+  #       replacement = "",
+  #       x = filterStatements$FILTER
+  #     )
+  #     network$filterStatements <- filterStatements
+  #     data_dict <- data_dict %>%
+  #       filter_(
+  #         paste0(
+  #           network$filterStatements$FILTER,
+  #           collapse = " | "
+  #         )
+  #       ) %>%
+  #       select(columns)
+  #
+  #     column_def <- list(
+  #       table = reactable::colDef(show = FALSE),
+  #       var_name = reactable::colDef(
+  #         name = "Variable Name",
+  #         minWidth = 150,
+  #         cell = function(value, index) {
+  #           table <- data_dict$table[index]
+  #           table <- if (!is.na(table)) table else "Unknown"
+  #           div(
+  #             div(
+  #               style = list(
+  #                 fontFamily = "Hasklug Nerd Font Mono",
+  #                 fontWeight = 600
+  #               ),
+  #               value
+  #             ),
+  #             div(style = list(fontSize = 12), table)
+  #           )
+  #         }
+  #       ),
+  #       var_label = reactable::colDef(
+  #         name = "Variable Label",
+  #         minWidth = 300
+  #       ),
+  #       nda_var_name = reactable::colDef(
+  #         name = "NDA Variable Name",
+  #         style = list(
+  #           fontColor = "gray"
+  #         ),
+  #       ),
+  #       nda_table = reactable::colDef(
+  #         name = "NDA Table"
+  #       ),
+  #       domain = reactable::colDef(
+  #         name = "Domain"
+  #       ),
+  #       recipient = reactable::colDef(
+  #         name = "Recipient"
+  #       ),
+  #       instrument = reactable::colDef(
+  #         name = "Instrument"
+  #       ),
+  #       assessment = reactable::colDef(
+  #         name = "Assessment"
+  #       ),
+  #       var_label_short = reactable::colDef(
+  #         name = "Variable Label (Short)"
+  #       ),
+  #       type = reactable::colDef(
+  #         name = "Type"
+  #       )
+  #     )
+  #
+  #     column_def <- column_def[names(column_def) %in% columns]
+  #
+  #     # browser()
+  #
+  #     out <- reactable::reactable(
+  #       data_dict,
+  #       columns = column_def,
+  #       # defaultColDef = reactable::colDef(
+  #       #   filterInput = function(values, name) {
+  #       #     if (name %in% c("instrument", "table")) {
+  #       #       data_list_filter_1("table-select")(values, name)
+  #       #     } else if (name %in% c("domain", "recipient", "assessment", "type")) {
+  #       #       data_list_filter_2("table-select")(values, name)
+  #       #     }
+  #       #   }
+  #       # ),
+  #       theme = reactable::reactableTheme(
+  #         cellStyle = list(
+  #           display = "flex",
+  #           flexDirection = "column",
+  #           justifyContent = "center"
+  #         ),
+  #         stripedColor = "#f0f5f9",
+  #         highlightColor = "#f0f5f9",
+  #         searchInputStyle = list(width = "100%")
+  #       ),
+  #       language = reactable::reactableLang(
+  #         searchPlaceholder = paste0(
+  #           "Enter string to filter all columns of the data dictionary at ",
+  #           "once or use the column-specific filter options below..."
+  #         )
+  #       ),
+  #       selection = "multiple",
+  #       onClick = "select",
+  #       striped = FALSE,
+  #       highlight = TRUE,
+  #       compact = TRUE,
+  #       searchable = TRUE,
+  #       filterable = TRUE,
+  #       showSortable = TRUE,
+  #       resizable = TRUE,
+  #       wrap = FALSE,
+  #       defaultPageSize = 50,
+  #       elementId = "table-select"
+  #     )
+  #   }
+  #
+  #   out
   # })
+
+  output$filteredTableOut <- reactable::renderReactable({
+    # browser()
+
+    filteredTable()
+  })
 
 }
 
