@@ -238,7 +238,7 @@ HTMLWidgets.widget({
           d._children = null;
         }
 
-        if (d._isSelected == false || d._isSelected == null){
+        if (d._isSelected === false || d._isSelected === null){
           d._isSelected = true;
         } else {
           d._isSelected = false;
