@@ -78,15 +78,24 @@ HTMLWidgets.widget({
       if (options.zoomable) d3.select(el).select('svg').call(zoom);
 
       // Add Circle for the nodes
-      nodeEnter.append('circle')
-      .attr('class', 'node')
-      .attr('r', 1e-6)
-      .attr('r', function(d) {
-        return d.data.SizeOfNode || 5; // default radius was 10, reduced to 5
-      })
-      .style('stroke-width', function(d) {
-        return d._children ? 1 : 1;
-      });
+      // nodeEnter // .append('circle')
+      // .attr('class', 'node')
+      // .attr('r', 1e-6)
+      // .attr('r', function(d) {
+      //   return d.data.SizeOfNode || 5; // default radius was 10, reduced to 5
+      // })
+      // .style('stroke-width', function(d) {
+      //   return d._children ? 1 : 1;
+      // });
+
+      // debugger;
+
+      nodeEnter.append("path")
+        .style("stroke", "black")
+        .style("fill", "white")
+        .attr("d", d3.symbol().size(200).type(function(d) {
+          if (d.depth >= 1) { return d3.symbolCircle; } else { return d3.symbolSquare;}
+        }));
 
       // Add labels for the nodes
       nodeEnter.append('text')
