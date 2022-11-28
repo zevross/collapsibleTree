@@ -1,5 +1,6 @@
 library(shiny)
-library(collapsibleTree)
+# library(collapsibleTree)
+devtools::load_all()
 
 # Define UI for application that draws a collapsible tree
 ui <- fluidPage(
@@ -33,7 +34,8 @@ server <- function(input, output) {
      }
      collapsibleTree(
        warpbreaks, hierarchy, input$root,
-       inputId = "node", linkLength = 100
+       inputId = "node", linkLength = 100,
+       collapsedNodes = c("B")
      )
    })
    output$str <- renderPrint(str(input$node))

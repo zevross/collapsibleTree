@@ -238,10 +238,17 @@ HTMLWidgets.widget({
           d._children = null;
         }
 
-        if (d._isSelected == false || d._isSelected == null){
+        if (d._isSelected === false || d._isSelected === null){
           d._isSelected = true;
         } else {
           d._isSelected = false;
+        }
+
+        // toggle Open/Closed state
+        if (d.state === undefined || d.state == "closed") {
+          d.state = "open";
+        } else {
+          d.state = "closed";
         }
 
         var t = d3.zoomTransform(svg.node());
