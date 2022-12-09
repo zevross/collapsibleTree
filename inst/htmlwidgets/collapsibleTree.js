@@ -66,9 +66,7 @@ HTMLWidgets.widget({
       .attr('transform', function(d) {
         return 'translate(' + source.y0 + ',' + source.x0 + ')';
       })
-      .on('click', click)
-      .on('mouseover', mouseover)
-      .on('mouseout', mouseout);
+      .on('click', click);
 
       // Add tooltips, if specified in options
       if (options.tooltip) {
@@ -357,15 +355,15 @@ HTMLWidgets.widget({
       }
 
       // Show tooltip on mouseover
-      function mouseover(d) {
+      function mouseover(d, i) {
 
-        //d3.select(this)
-        //  .style('font-size', function(d) {
-        //    return (options.fontSize + 1) + 'px';
-        //  })
-        //  .style('font-weight', function(d) {
-        //    return 'bolder';
-        //  });
+        if(d._isSelected == false || d._isSelected == null){
+              console.log(this);
+              d3.select(this).select('text.node-text')
+                .style('font-size', '14px')
+                .style('font-weight', 'bolder');
+            }
+
 
         tooltip.transition()
         .duration(200)
@@ -383,15 +381,13 @@ HTMLWidgets.widget({
       }
 
       // Hide tooltip on mouseout
-      function mouseout(d) {
+      function mouseout(d, i) {
 
-        //d3.select(this)
-        //  .style('font-size', function(d) {
-        //    return (options.fontSize) + 'px';
-        //  })
-        //  .style('font-weight', function(d) {
-        //    return 'lighter';
-        //  });
+         if(d._isSelected == false || d._isSelected == null){
+              d3.select(this).select('text.node-text')
+                .style('font-size', '13px')
+                .style('font-weight', 'lighter');
+            }
 
         tooltip.transition()
         .duration(500)
