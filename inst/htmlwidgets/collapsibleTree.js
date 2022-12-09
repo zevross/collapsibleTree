@@ -360,7 +360,7 @@ HTMLWidgets.widget({
         if(d._isSelected == false || d._isSelected == null){
               console.log(this);
               d3.select(this).select('text.node-text')
-                .style('font-size', '14px')
+                .style('font-size', '12px')
                 .style('font-weight', 'bolder');
             }
 
@@ -385,7 +385,7 @@ HTMLWidgets.widget({
 
          if(d._isSelected == false || d._isSelected == null){
               d3.select(this).select('text.node-text')
-                .style('font-size', '13px')
+                .style('font-size', '11px')
                 .style('font-weight', 'lighter');
             }
 
