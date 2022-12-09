@@ -169,14 +169,11 @@ HTMLWidgets.widget({
 
       // On exit reduce the node circles size to 0
       nodeExit.select('circle')
-      .attr('r', 1e-6)
-      .attr('class', 'hidden')
-      .remove();
+      .attr('r', 1e-6);
 
       // On exit reduce the opacity of text labels
       nodeExit.select('text')
-      .style('fill-opacity', 1e-6)
-      .remove();
+      .style('fill-opacity', 1e-6);
 
   // ****************** links section ***************************
 
@@ -370,19 +367,19 @@ HTMLWidgets.widget({
         //    return 'bolder';
         //  });
 
-        //tooltip.transition()
-        //.duration(200)
-        //.style('opacity', .9);
+        tooltip.transition()
+        .duration(200)
+        .style('opacity', .9);
 
-        //// Show either a constructed tooltip, or override with one from the data
-        //tooltip.html(
-        //  d.data.tooltip || d.data.name + '<br>' +
-        //  options.attribute + ': ' + d.data.WeightOfNode
-        //)
+        // Show either a constructed tooltip, or override with one from the data
+        tooltip.html(
+          d.data.tooltip || d.data.name + '<br>' +
+          options.attribute + ': ' + d.data.WeightOfNode
+        )
         // Make the tooltip font size just a little bit bigger
-        //.style('font-size', (options.fontSize + 1) + 'px')
-        //.style('left', (d3.event.layerX) + 'px')
-        //.style('top', (d3.event.layerY - 10) + 'px');
+        .style('font-size', (options.fontSize + 1) + 'px')
+        .style('left', (d3.event.layerX) + 'px')
+        .style('top', (d3.event.layerY - 10) + 'px');
       }
 
       // Hide tooltip on mouseout
@@ -396,9 +393,9 @@ HTMLWidgets.widget({
         //    return 'lighter';
         //  });
 
-        //tooltip.transition()
-        //.duration(500)
-        //.style('opacity', 0);
+        tooltip.transition()
+        .duration(500)
+        .style('opacity', 0);
       }
     }
 
