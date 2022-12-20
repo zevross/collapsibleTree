@@ -167,8 +167,7 @@ HTMLWidgets.widget({
 
       // On exit reduce the node circles size to 0
       nodeExit.select('circle')
-      .attr('r', 1e-6)
-      .attr('class', 'hidden');
+      .attr('r', 1e-6);
 
       // On exit reduce the opacity of text labels
       nodeExit.select('text')
@@ -269,6 +268,59 @@ HTMLWidgets.widget({
 
         update(d);
 
+        var nodes = d3.selectAll("circle.node").size()
+
+        //console.log(d._isSelected);
+        if(d._isSelected == false) {
+          nodes = (nodes - d._children.length)
+          //console.log(d._children.length);
+        }
+        console.log(nodes);
+
+        if(nodes < 35) {
+            // width and height, corrected for margins
+            var heightMargin = height - options.margin.top - options.margin.bottom,
+            widthMargin = width - options.margin.left - options.margin.right;
+
+            // Update the treemap to fit the new canvas size
+            treemap = d3.tree().size([heightMargin, widthMargin])
+            .separation(separationFun);
+            update(root)
+        }
+
+        if(nodes >= 35 && nodes < 130) {
+            // width and height, corrected for margins
+            var heightMargin = height - options.margin.top - options.margin.bottom,
+            widthMargin = width - options.margin.left - options.margin.right;
+
+            // Update the treemap to fit the new canvas size
+            treemap = d3.tree().size([heightMargin*2, widthMargin])
+            .separation(separationFun);
+            update(root)
+        }
+
+        if(nodes >= 130 && nodes < 160) {
+            // width and height, corrected for margins
+            var heightMargin = height - options.margin.top - options.margin.bottom,
+            widthMargin = width - options.margin.left - options.margin.right;
+
+            // Update the treemap to fit the new canvas size
+            treemap = d3.tree().size([heightMargin*3, widthMargin])
+            .separation(separationFun);
+            update(root)
+        }
+
+        if(nodes > 160) {
+            // width and height, corrected for margins
+            var heightMargin = height - options.margin.top - options.margin.bottom,
+            widthMargin = width - options.margin.left - options.margin.right;
+
+            // Update the treemap to fit the new canvas size
+            treemap = d3.tree().size([heightMargin*4, widthMargin])
+            .separation(separationFun);
+            update(root)
+        }
+
         // Hide the tooltip after clicking
         tooltip.transition()
         .duration(100)
@@ -303,7 +355,16 @@ HTMLWidgets.widget({
       }
 
       // Show tooltip on mouseover
-      function mouseover(d) {
+      function mouseover(d, i) {
+
+        if(d._isSelected == false || d._isSelected == null){
+              console.log(this);
+              d3.select(this).select('text.node-text')
+                .style('font-size', '12px')
+                .style('font-weight', 'bolder');
+            }
+
+
         tooltip.transition()
         .duration(200)
         .style('opacity', .9);
@@ -320,7 +381,14 @@ HTMLWidgets.widget({
       }
 
       // Hide tooltip on mouseout
-      function mouseout(d) {
+      function mouseout(d, i) {
+
+         if(d._isSelected == false || d._isSelected == null){
+              d3.select(this).select('text.node-text')
+                .style('font-size', '11px')
+                .style('font-weight', 'lighter');
+            }
+
         tooltip.transition()
         .duration(500)
         .style('opacity', 0);
@@ -412,10 +480,13 @@ HTMLWidgets.widget({
 function separationFun(a, b) {
   var height = Math.sqrt(a.data.SizeOfNode) + Math.sqrt(b.data.SizeOfNode),
   // Scale distance to SizeOfNode, if defined
-  distance = (height) / 25; // increase denominator for better spacing in DEAP app
-  //if (distance < .4) {
-  //  distance = .4
-  //}
+  distance = (height)/25; // increase denominator for better spacing in DEAP app
+  if (distance < .4) {
+    distance = .4
+  }
+  if (distance > 1.5) {
+    distance = 1.5
+  }
   //console.log(distance);
   return (a.parent === b.parent ? distance : 1);
 };
