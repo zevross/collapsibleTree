@@ -275,7 +275,7 @@ HTMLWidgets.widget({
           nodes = (nodes - d._children.length)
           //console.log(d._children.length);
         }
-        console.log(nodes);
+        // console.log(nodes);
 
         if(nodes < 35) {
             // width and height, corrected for margins
@@ -358,7 +358,7 @@ HTMLWidgets.widget({
       function mouseover(d, i) {
 
         if(d._isSelected == false || d._isSelected == null){
-              console.log(this);
+              // console.log(this);
               d3.select(this).select('text.node-text')
                 .style('font-size', '12px')
                 .style('font-weight', 'bolder');
