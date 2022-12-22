@@ -268,11 +268,13 @@ HTMLWidgets.widget({
 
         update(d);
 
-        var nodes = d3.selectAll("circle.node").size()
+        var nodes = d3.selectAll("circle.node").size();
 
         //console.log(d._isSelected);
-        if(d._isSelected == false) {
-          nodes = (nodes - d._children.length)
+        if(d._isSelected === false) {
+          if (d._children) {
+            nodes = (nodes - d._children.length);
+          }
           //console.log(d._children.length);
         }
         // console.log(nodes);
