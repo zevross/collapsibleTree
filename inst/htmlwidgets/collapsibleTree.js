@@ -117,6 +117,7 @@ HTMLWidgets.widget({
       nodeUpdate.select('circle.node')
       .style('fill', function(d) {
         if (d._isSelected === true){
+        // if (d._isSelected === true || d.data.collapsed === false){
           return options.fill;
         } else {
           return '#FFF';
@@ -223,9 +224,10 @@ HTMLWidgets.widget({
         return path;
       }
 
-      newnest = nodes.filter(nodes => nodes.depth > 0 && nodes._isSelected === true).map(function(nd) {
+      newnest = nodes.filter(nodes => nodes.depth > 0 && (nodes._isSelected === true || nodes.data.collapsed === false)).map(function(nd) {
         return {
-            id: nd.root_id,
+            id: nd.root_id === undefined ? nd.id : nd.root_id,
+            // id: nd.root_id,
             parent: nd.parent.data.name,
             level: options.hierarchy[nd.depth - 1],
             value: nd.data.name
@@ -234,6 +236,8 @@ HTMLWidgets.widget({
 
       // Toggle children on click.
       function click(d) {
+
+        // debugger;
 
         // toggle children
         if (d.children) {
@@ -245,10 +249,18 @@ HTMLWidgets.widget({
         }
 
         // toggle _isselected
-        if (d._isSelected == false || d._isSelected == null){
+        if (d._isSelected === false || d._isSelected === null){
           d._isSelected = true;
         } else {
           d._isSelected = false;
+        }
+
+        // toggle `collapsed`
+        if (d.data.collapsed === false) {
+        // if (d.data.collapsed === false || d.data.collapsed === null) {
+          d.data.collapsed = true;
+        } else if (d.data.collapsed === true) {
+          d.data.collapsed = false;
         }
 
         // toggle node state
@@ -438,12 +450,46 @@ HTMLWidgets.widget({
         function collapse(d) {
           // A collapsed data value was specified and is true
           if(d.children && options.collapsed in d.data && !d.data[options.collapsed]) {
+
+            d._isSelected = true
+
+            // var nest = {},
+            // obj = d;
+            // Navigate up the list and recursively find parental nodes
+            // for (var n = d.depth; n > 0; n--) {
+
+              // ONLY add to `nest` IFF selected (i.e. `._isSelected == true`)
+              // if (obj._isSelected == true) {
+                // if (nest[options.hierarchy[n-1]] === undefined) {
+                  // nest[options.hierarchy[n-1]] = obj.data.name;
+                // } else {
+                  // nest[options.hierarchy[n-1]].push(obj.data.name);
+                // }
+              // }
+              // obj = obj.parent;
+            // }
+
+            // WeightOfNode == 0 for `n` nodes
+            // if (d.data.WeightOfNode > 0) {
+            //  Shiny.setInputValue(options.input, nest, { priority: "event" });
+            // }
+            // Shiny.setInputValue(options.input, nest, { priority: "event" });
+
+            Shiny.setInputValue(options.input, JSON.stringify(newnest), { priority: "event" });
+
             d.children.forEach(collapse)
           } else if(d.children) {
+
+            d._isSelected = false;
+
+            // debugger;
+
             d._children = d.children
             d._children.forEach(collapse)
             d.children = null
           }
+
+          // update(d);
         }
       },
 
