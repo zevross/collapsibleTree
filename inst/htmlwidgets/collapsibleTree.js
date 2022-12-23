@@ -226,8 +226,8 @@ HTMLWidgets.widget({
 
       newnest = nodes.filter(nodes => nodes.depth > 0 && (nodes._isSelected === true || nodes.data.collapsed === false)).map(function(nd) {
         return {
-            id: nd.root_id === undefined ? nd.id : nd.root_id,
-            // id: nd.root_id,
+            // id: nd.root_id === undefined ? nd.id : nd.root_id,
+            id: nd.root_id,
             parent: nd.parent.data.name,
             level: options.hierarchy[nd.depth - 1],
             value: nd.data.name
