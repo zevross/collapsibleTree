@@ -117,7 +117,6 @@ HTMLWidgets.widget({
       nodeUpdate.select('circle.node')
       .style('fill', function(d) {
         if (d._isSelected === true){
-        // if (d._isSelected === true || d.data.collapsed === false){
           return options.fill;
         } else {
           return '#FFF';
@@ -128,10 +127,10 @@ HTMLWidgets.widget({
       // Update the node-text attributes and style
       nodeUpdate.select('text.node-text')
       .attr('text-anchor', function(d) {
-        if(d.children){
-            return 'end';
+        if (d.children) {
+          return 'end';
         } else {
-            return 'start';
+          return 'start';
         }
       })
       .attr('x', function(d) {
@@ -226,7 +225,6 @@ HTMLWidgets.widget({
 
       newnest = nodes.filter(nodes => nodes.depth > 0 && (nodes._isSelected === true || nodes.data.collapsed === false)).map(function(nd) {
         return {
-            // id: nd.root_id === undefined ? nd.id : nd.root_id,
             id: nd.root_id,
             parent: nd.parent.data.name,
             level: options.hierarchy[nd.depth - 1],
@@ -236,8 +234,6 @@ HTMLWidgets.widget({
 
       // Toggle children on click.
       function click(d) {
-
-        // debugger;
 
         // toggle children
         if (d.children) {
@@ -262,13 +258,6 @@ HTMLWidgets.widget({
         } else if (d.data.collapsed === true) {
           d.data.collapsed = false;
         }
-
-        // toggle node state
-        //if (d.state === undefined || d.state == "closed") {
-        //  d.state = "open";
-        //} else {
-        //  d.state = "closed";
-        //}
 
         var t = d3.zoomTransform(svg.node());
         var x = -source.y0;
@@ -299,7 +288,7 @@ HTMLWidgets.widget({
             // Update the treemap to fit the new canvas size
             treemap = d3.tree().size([heightMargin, widthMargin])
             .separation(separationFun);
-            update(root)
+            update(root);
         }
 
         if(nodes >= 35 && nodes < 130) {
