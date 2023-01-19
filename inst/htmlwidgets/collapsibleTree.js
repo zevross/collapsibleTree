@@ -341,7 +341,7 @@ HTMLWidgets.widget({
           for (var n = d.depth; n > 0; n--) {
 
             // ONLY add to `nest` IFF selected (i.e. `._isSelected == true`)
-            if (obj._isSelected == true) {
+            if (obj._isSelected === true) {
 
               // debugger;
 
