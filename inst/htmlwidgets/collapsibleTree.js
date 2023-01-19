@@ -6,11 +6,15 @@ HTMLWidgets.widget({
   factory: function(el, width, height) {
 
     var i = 0,
-    duration = 750,
+    duration = 250,
     root = {},
     options = {},
     newnest = {},
     treemap;
+
+    if (i === 0) {
+      debugger;
+    }
 
     // Optionally enable zooming, and limit to 1/5x or 5x of the original viewport
     var zoom = d3.zoom()
@@ -144,16 +148,16 @@ HTMLWidgets.widget({
       })
       .style('font-size', function(d) {
         if (d._isSelected === true) {
-            return (options.fontSize + 1) + 'px';
+          return (options.fontSize + 1) + 'px';
         } else {
-            return (options.fontSize) + 'px';
+          return (options.fontSize) + 'px';
         }
       })
       .style('font-weight', function(d) {
         if (d._isSelected === true) {
-            return 'bolder';
+          return 'bolder';
         } else {
-            return 'lighter';
+          return 'lighter';
         }
       });
 
@@ -338,6 +342,9 @@ HTMLWidgets.widget({
 
             // ONLY add to `nest` IFF selected (i.e. `._isSelected == true`)
             if (obj._isSelected == true) {
+
+              // debugger;
+
               if (nest[options.hierarchy[n-1]] === undefined) {
                 nest[options.hierarchy[n-1]] = obj.data.name;
               } else {
@@ -348,24 +355,28 @@ HTMLWidgets.widget({
           }
 
           // WeightOfNode == 0 for `n` nodes
-          // if (d.data.WeightOfNode > 0) {
+          if (d.data.WeightOfNode > 0) {
+
+            debugger;
+
+            Shiny.setInputValue(options.input, JSON.stringify(newnest), { priority: "event" });
           //  Shiny.setInputValue(options.input, nest, { priority: "event" });
-          // }
+          }
           // Shiny.setInputValue(options.input, nest, { priority: "event" });
 
-          Shiny.setInputValue(options.input, JSON.stringify(newnest), { priority: "event" });
+          // Shiny.setInputValue(options.input, JSON.stringify(newnest), { priority: "event" });
         }
       }
 
       // Show tooltip on mouseover
       function mouseover(d, i) {
 
-        if(d._isSelected == false || d._isSelected == null){
-              // console.log(this);
-              d3.select(this).select('text.node-text')
-                .style('font-size', '12px')
-                .style('font-weight', 'bolder');
-            }
+        if (d._isSelected === false || d._isSelected === null) {
+          // console.log(this);
+          d3.select(this).select('text.node-text')
+            .style('font-size', '12px')
+            .style('font-weight', 'bolder');
+        }
 
 
         tooltip.transition()
@@ -386,11 +397,11 @@ HTMLWidgets.widget({
       // Hide tooltip on mouseout
       function mouseout(d, i) {
 
-         if(d._isSelected == false || d._isSelected == null){
-              d3.select(this).select('text.node-text')
-                .style('font-size', '11px')
-                .style('font-weight', 'lighter');
-            }
+        if(d._isSelected === false || d._isSelected === null){
+          d3.select(this).select('text.node-text')
+            .style('font-size', '11px')
+            .style('font-weight', 'lighter');
+        }
 
         tooltip.transition()
         .duration(500)
@@ -405,6 +416,7 @@ HTMLWidgets.widget({
         root.x0 = height / 2;
         root.y0 = 0;
         root._isSelected = true;
+        // root.collapsed = false;
 
         // Attach options as a property of the instance
         options = x.options;
@@ -449,7 +461,7 @@ HTMLWidgets.widget({
             d._isSelected = true
 
             d.children.forEach(collapse)
-          } else if(d.children) {
+          } else if (d.children) {
 
             d._isSelected = false;
 
