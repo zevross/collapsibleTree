@@ -96,7 +96,7 @@ collapsibleTree.Node <- function(df, hierarchy_attribute = "level",
     data.tree::Do(t, function(x) {
       x$SizeOfNode <- data.tree::Aggregate(x, nodeSize, aggFun)
       # scale node growth to area rather than radius and round
-      x$SizeOfNode <- round(sqrt(x$SizeOfNode*scaleFactor)*pi, 2)
+      x$SizeOfNode <- round(x$SizeOfNode*scaleFactor*pi, 2) * 5
     })
     # update left margin based on new root size
     options$margin$left <- options$margin$left + df$SizeOfNode - 10
