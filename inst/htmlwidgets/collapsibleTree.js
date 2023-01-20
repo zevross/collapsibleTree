@@ -6,7 +6,7 @@ HTMLWidgets.widget({
   factory: function(el, width, height) {
 
     var i = 0,
-    duration = 750,
+    duration = 250,
     root = {},
     options = {},
     newnest = {},
@@ -144,16 +144,16 @@ HTMLWidgets.widget({
       })
       .style('font-size', function(d) {
         if (d._isSelected === true) {
-            return (options.fontSize + 1) + 'px';
+          return (options.fontSize + 1) + 'px';
         } else {
-            return (options.fontSize) + 'px';
+          return (options.fontSize) + 'px';
         }
       })
       .style('font-weight', function(d) {
         if (d._isSelected === true) {
-            return 'bolder';
+          return 'bolder';
         } else {
-            return 'lighter';
+          return 'lighter';
         }
       });
 
@@ -234,38 +234,43 @@ HTMLWidgets.widget({
 
       // Toggle children on click.
       function click(d) {
-
-        // toggle children
-        if (d.children) {
-          d._children = d.children;
-          d.children = null;
-        } else {
-          d.children = d._children;
-          d._children = null;
-        }
-
         // toggle _isselected
-        if (d._isSelected === false || d._isSelected === null){
+        if (d._isSelected === false || d._isSelected === null || d._isSelected === undefined) {
           d._isSelected = true;
         } else {
           d._isSelected = false;
         }
 
-        // toggle `collapsed`
-        if (d.data.collapsed === false) {
-        // if (d.data.collapsed === false || d.data.collapsed === null) {
-          d.data.collapsed = true;
-        } else if (d.data.collapsed === true) {
-          d.data.collapsed = false;
+        if (d.height > 0) {
+
+          // toggle children
+          if (d.children) {
+            d._children = d.children;
+            d.children = null;
+          } else {
+            d.children = d._children;
+            d._children = null;
+          }
+
+          // toggle `collapsed`
+          if (d.data.collapsed === false) {
+          // if (d.data.collapsed === false || d.data.collapsed === null) {
+            d.data.collapsed = true;
+          } else if (d.data.collapsed === true) {
+            d.data.collapsed = false;
+          } else {
+            d.data.collapsed = true;
+          }
+
+          var t = d3.zoomTransform(svg.node());
+          var x = -source.y0;
+          var y = -source.x0;
+          var new_x = x * t.k + width / 6;
+          var new_y = y * t.k + height / 2;
+
+          svg.transition().duration(750).attr("transform", "translate(" + new_x + "," + new_y + ")");
+
         }
-
-        var t = d3.zoomTransform(svg.node());
-        var x = -source.y0;
-        var y = -source.x0;
-        var new_x = x * t.k + width / 6;
-        var new_y = y * t.k + height / 2;
-
-        svg.transition().duration(750).attr("transform", "translate(" + new_x + "," + new_y + ")");
 
         update(d);
 
@@ -331,46 +336,22 @@ HTMLWidgets.widget({
 
         // Update Shiny inputs, if applicable
         if (options.input) {
-          var nest = {},
-          obj = d;
-          // Navigate up the list and recursively find parental nodes
-          for (var n = d.depth; n > 0; n--) {
-
-            // ONLY add to `nest` IFF selected (i.e. `._isSelected == true`)
-            if (obj._isSelected == true) {
-              if (nest[options.hierarchy[n-1]] === undefined) {
-                nest[options.hierarchy[n-1]] = obj.data.name;
-              } else {
-                nest[options.hierarchy[n-1]].push(obj.data.name);
-              }
-            }
-            obj = obj.parent;
-          }
-
-          // WeightOfNode == 0 for `n` nodes
-          // if (d.data.WeightOfNode > 0) {
-          //  Shiny.setInputValue(options.input, nest, { priority: "event" });
-          // }
-          // Shiny.setInputValue(options.input, nest, { priority: "event" });
-
           Shiny.setInputValue(options.input, JSON.stringify(newnest), { priority: "event" });
         }
       }
 
       // Show tooltip on mouseover
       function mouseover(d, i) {
-
-        if(d._isSelected == false || d._isSelected == null){
-              // console.log(this);
-              d3.select(this).select('text.node-text')
-                .style('font-size', '12px')
-                .style('font-weight', 'bolder');
-            }
-
+        if (d._isSelected === false || d._isSelected === null || d._isSelected === undefined) {
+          // console.log(this);
+          d3.select(this).select('text.node-text')
+            .style('font-size', '12px')
+            .style('font-weight', 'bolder');
+        }
 
         tooltip.transition()
         .duration(200)
-        .style('opacity', .9);
+        .style('opacity', 0.9);
 
         // Show either a constructed tooltip, or override with one from the data
         tooltip.html(
@@ -386,11 +367,11 @@ HTMLWidgets.widget({
       // Hide tooltip on mouseout
       function mouseout(d, i) {
 
-         if(d._isSelected == false || d._isSelected == null){
-              d3.select(this).select('text.node-text')
-                .style('font-size', '11px')
-                .style('font-weight', 'lighter');
-            }
+        if (d._isSelected === false || d._isSelected === null || d._isSelected === undefined) {
+          d3.select(this).select('text.node-text')
+            .style('font-size', '11px')
+            .style('font-weight', 'lighter');
+        }
 
         tooltip.transition()
         .duration(500)
@@ -405,6 +386,7 @@ HTMLWidgets.widget({
         root.x0 = height / 2;
         root.y0 = 0;
         root._isSelected = true;
+        // root.collapsed = false;
 
         // Attach options as a property of the instance
         options = x.options;
@@ -412,6 +394,10 @@ HTMLWidgets.widget({
         // Update the canvas with the new dimensions
         svg = svg.attr('transform', 'translate('
         + options.margin.left + ',' + options.margin.top + ')')
+
+        tooltip = tooltip
+          .attr('class', 'tooltip')
+          .style('opacity', 0);
 
         // width and height, corrected for margins
         var heightMargin = height - options.margin.top - options.margin.bottom,
@@ -449,11 +435,9 @@ HTMLWidgets.widget({
             d._isSelected = true
 
             d.children.forEach(collapse)
-          } else if(d.children) {
+          } else if (d.children) {
 
             d._isSelected = false;
-
-            // debugger;
 
             d._children = d.children
             d._children.forEach(collapse)
