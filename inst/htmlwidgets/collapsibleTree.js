@@ -234,38 +234,43 @@ HTMLWidgets.widget({
 
       // Toggle children on click.
       function click(d) {
-
-        // toggle children
-        if (d.children) {
-          d._children = d.children;
-          d.children = null;
-        } else {
-          d.children = d._children;
-          d._children = null;
-        }
-
         // toggle _isselected
-        if (d._isSelected === false || d._isSelected === null){
+        if (d._isSelected === false || d._isSelected === null || d._isSelected === undefined) {
           d._isSelected = true;
         } else {
           d._isSelected = false;
         }
 
-        // toggle `collapsed`
-        if (d.data.collapsed === false) {
-        // if (d.data.collapsed === false || d.data.collapsed === null) {
-          d.data.collapsed = true;
-        } else if (d.data.collapsed === true) {
-          d.data.collapsed = false;
+        if (d.height > 0) {
+
+          // toggle children
+          if (d.children) {
+            d._children = d.children;
+            d.children = null;
+          } else {
+            d.children = d._children;
+            d._children = null;
+          }
+
+          // toggle `collapsed`
+          if (d.data.collapsed === false) {
+          // if (d.data.collapsed === false || d.data.collapsed === null) {
+            d.data.collapsed = true;
+          } else if (d.data.collapsed === true) {
+            d.data.collapsed = false;
+          } else {
+            d.data.collapsed = true;
+          }
+
+          var t = d3.zoomTransform(svg.node());
+          var x = -source.y0;
+          var y = -source.x0;
+          var new_x = x * t.k + width / 6;
+          var new_y = y * t.k + height / 2;
+
+          svg.transition().duration(750).attr("transform", "translate(" + new_x + "," + new_y + ")");
+
         }
-
-        var t = d3.zoomTransform(svg.node());
-        var x = -source.y0;
-        var y = -source.x0;
-        var new_x = x * t.k + width / 6;
-        var new_y = y * t.k + height / 2;
-
-        svg.transition().duration(750).attr("transform", "translate(" + new_x + "," + new_y + ")");
 
         update(d);
 
@@ -331,42 +336,12 @@ HTMLWidgets.widget({
 
         // Update Shiny inputs, if applicable
         if (options.input) {
-          var nest = {},
-          obj = d;
-          // Navigate up the list and recursively find parental nodes
-          for (var n = d.depth; n > 0; n--) {
-
-            // ONLY add to `nest` IFF selected (i.e. `._isSelected == true`)
-            if (obj._isSelected === true) {
-
-              // debugger;
-
-              if (nest[options.hierarchy[n-1]] === undefined) {
-                nest[options.hierarchy[n-1]] = obj.data.name;
-              } else {
-                nest[options.hierarchy[n-1]].push(obj.data.name);
-              }
-            }
-            obj = obj.parent;
-          }
-
-          // WeightOfNode == 0 for `n` nodes
-          if (d.data.WeightOfNode > 0) {
-
-            debugger;
-
-            Shiny.setInputValue(options.input, JSON.stringify(newnest), { priority: "event" });
-          //  Shiny.setInputValue(options.input, nest, { priority: "event" });
-          }
-          // Shiny.setInputValue(options.input, nest, { priority: "event" });
-
-          // Shiny.setInputValue(options.input, JSON.stringify(newnest), { priority: "event" });
+          Shiny.setInputValue(options.input, JSON.stringify(newnest), { priority: "event" });
         }
       }
 
       // Show tooltip on mouseover
       function mouseover(d, i) {
-
         if (d._isSelected === false || d._isSelected === null) {
           // console.log(this);
           d3.select(this).select('text.node-text')
@@ -374,10 +349,9 @@ HTMLWidgets.widget({
             .style('font-weight', 'bolder');
         }
 
-
         tooltip.transition()
         .duration(200)
-        .style('opacity', .9);
+        .style('opacity', 0.9);
 
         // Show either a constructed tooltip, or override with one from the data
         tooltip.html(
@@ -393,7 +367,7 @@ HTMLWidgets.widget({
       // Hide tooltip on mouseout
       function mouseout(d, i) {
 
-        if(d._isSelected === false || d._isSelected === null){
+        if (d._isSelected === false || d._isSelected === null){
           d3.select(this).select('text.node-text')
             .style('font-size', '11px')
             .style('font-weight', 'lighter');
@@ -420,6 +394,10 @@ HTMLWidgets.widget({
         // Update the canvas with the new dimensions
         svg = svg.attr('transform', 'translate('
         + options.margin.left + ',' + options.margin.top + ')')
+
+        tooltip = tooltip
+          .attr('class', 'tooltip')
+          .style('opacity', 0);
 
         // width and height, corrected for margins
         var heightMargin = height - options.margin.top - options.margin.bottom,
@@ -460,8 +438,6 @@ HTMLWidgets.widget({
           } else if (d.children) {
 
             d._isSelected = false;
-
-            // debugger;
 
             d._children = d.children
             d._children.forEach(collapse)
