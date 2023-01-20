@@ -342,7 +342,7 @@ HTMLWidgets.widget({
 
       // Show tooltip on mouseover
       function mouseover(d, i) {
-        if (d._isSelected === false || d._isSelected === null) {
+        if (d._isSelected === false || d._isSelected === null || d._isSelected === undefined) {
           // console.log(this);
           d3.select(this).select('text.node-text')
             .style('font-size', '12px')
@@ -367,7 +367,7 @@ HTMLWidgets.widget({
       // Hide tooltip on mouseout
       function mouseout(d, i) {
 
-        if (d._isSelected === false || d._isSelected === null){
+        if (d._isSelected === false || d._isSelected === null || d._isSelected === undefined) {
           d3.select(this).select('text.node-text')
             .style('font-size', '11px')
             .style('font-weight', 'lighter');
