@@ -12,10 +12,6 @@ HTMLWidgets.widget({
     newnest = {},
     treemap;
 
-    if (i === 0) {
-      debugger;
-    }
-
     // Optionally enable zooming, and limit to 1/5x or 5x of the original viewport
     var zoom = d3.zoom()
     .scaleExtent([1/5, 5])
