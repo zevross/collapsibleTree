@@ -4,3 +4,6 @@
 ^README-.*\.PNG$
 ^docs$
 ^cran-comments\.md$
+^inst/examples$
+[.]code-workspace$
+^jsconfig\.json$
