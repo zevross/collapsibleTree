@@ -24,7 +24,7 @@ collapsibleTree.Node <- function(df, hierarchy_attribute = "level",
   rightMargin <- max(purrr::map_dbl(rightLabelVector, nchar))
 
   # Deriving hierarchy variable from data.tree input
-  hierarchy <- unique(ToDataFrameTree(df, hierarchy_attribute)[[hierarchy_attribute]])
+  hierarchy <- unique(data.tree::ToDataFrameTree(df, hierarchy_attribute)[[hierarchy_attribute]])
   if(length(hierarchy) <= 1) stop("hierarchy vector must be greater than length 1")
 
   # create a list that contains the options

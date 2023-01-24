@@ -94,8 +94,7 @@
 #' that constructs trees from the network data frame
 #'
 #' @import htmlwidgets
-#' @importFrom data.tree ToListExplicit FromDataFrameNetwork
-#' @importFrom data.tree Traverse Do Aggregate
+#' @importFrom data.tree ToListExplicit FromDataFrameNetwork Traverse Do Aggregate
 #' @export
 collapsibleTreeNetwork <- function(df, inputId = NULL, attribute = "leafCount",
                                     aggFun = sum, fill = "lightsteelblue",
