@@ -24,7 +24,8 @@ Imports:
     data.tree,
     htmlwidgets,
     methods,
-    stats
+    stats,
+    purrr
 Suggests:
     colorspace,
     dplyr,

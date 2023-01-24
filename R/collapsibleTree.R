@@ -110,8 +110,8 @@
 #'
 #' @import htmlwidgets
 #' @importFrom methods is
-#' @importFrom data.tree ToDataFrameTree ToListExplicit as.Node
-#' @importFrom data.tree Traverse Do Aggregate
+#' @importFrom data.tree as.Node Aggregate Do Get ToDataFrameTree ToListExplicit Traverse
+#' @importFrom purrr map map_dbl
 #' @importFrom stats complete.cases median
 #' @rdname collapsibleTree
 #' @export

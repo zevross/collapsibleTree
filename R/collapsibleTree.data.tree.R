@@ -21,7 +21,7 @@ collapsibleTree.Node <- function(df, hierarchy_attribute = "level",
   # calculate the right and left margins in pixels
   leftMargin <- nchar(root)
   rightLabelVector <- df$Get("name", filterFun = function(x) x$level==df$height)
-  rightMargin <- max(sapply(rightLabelVector, nchar))
+  rightMargin <- max(purrr::map_dbl(rightLabelVector, nchar))
 
   # Deriving hierarchy variable from data.tree input
   hierarchy <- unique(ToDataFrameTree(df, hierarchy_attribute)[[hierarchy_attribute]])

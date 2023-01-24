@@ -29,14 +29,14 @@ collapsibleTree.data.frame <- function(df, hierarchy, root = deparse(substitute(
 
   # if df has NAs, coerce them into character columns and replace them with ""
   if(sum(complete.cases(df[hierarchy])) != nrow(df)) {
-    df[hierarchy] <- lapply(df[hierarchy], as.character)
+    df[hierarchy] <- purrr::map(df[hierarchy], as.character)
     df[is.na(df)] <- ""
   }
 
   # calculate the right and left margins in pixels
   leftMargin <- nchar(root)
   rightLabelVector <- as.character(df[[hierarchy[length(hierarchy)]]])
-  rightMargin <- max(sapply(rightLabelVector, nchar))
+  rightMargin <- max(purrr::map_dbl(rightLabelVector, nchar))
 
   # create a list that contains the options
   options <- list(
