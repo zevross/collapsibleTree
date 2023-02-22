@@ -277,7 +277,7 @@ HTMLWidgets.widget({
         var nodes = d3.selectAll("circle.node").size();
 
         //console.log(d._isSelected);
-        if(d._isSelected === false) {
+        if (d._isSelected === false) {
           if (d._children) {
             nodes = (nodes - d._children.length);
           }
@@ -285,54 +285,34 @@ HTMLWidgets.widget({
         }
         // console.log(nodes);
 
-        if(nodes < 35) {
-            // width and height, corrected for margins
-            var heightMargin = height - options.margin.top - options.margin.bottom,
-            widthMargin = width - options.margin.left - options.margin.right;
+        // width and height, corrected for margins
+        var heightMargin = height - options.margin.top - options.margin.bottom,
+        widthMargin = width - options.margin.left - options.margin.right;
 
-            // Update the treemap to fit the new canvas size
-            treemap = d3.tree().size([heightMargin, widthMargin])
-            .separation(separationFun);
-            update(root);
+        if (nodes < 35) {
+          // Update the treemap to fit the new canvas size
+          treemap = d3.tree().size([heightMargin, widthMargin])
+          .separation(separationFun);
+        } else if (nodes >= 35 && nodes < 130) {
+          // Update the treemap to fit the new canvas size
+          treemap = d3.tree().size([heightMargin*2, widthMargin])
+          .separation(separationFun);
+        } else if (nodes >= 130 && nodes < 160) {
+          // Update the treemap to fit the new canvas size
+          treemap = d3.tree().size([heightMargin*3, widthMargin])
+          .separation(separationFun);
+        } else if (nodes > 160) {
+          // Update the treemap to fit the new canvas size
+          treemap = d3.tree().size([heightMargin*4, widthMargin])
+          .separation(separationFun);
         }
 
-        if(nodes >= 35 && nodes < 130) {
-            // width and height, corrected for margins
-            var heightMargin = height - options.margin.top - options.margin.bottom,
-            widthMargin = width - options.margin.left - options.margin.right;
-
-            // Update the treemap to fit the new canvas size
-            treemap = d3.tree().size([heightMargin*2, widthMargin])
-            .separation(separationFun);
-            update(root)
-        }
-
-        if(nodes >= 130 && nodes < 160) {
-            // width and height, corrected for margins
-            var heightMargin = height - options.margin.top - options.margin.bottom,
-            widthMargin = width - options.margin.left - options.margin.right;
-
-            // Update the treemap to fit the new canvas size
-            treemap = d3.tree().size([heightMargin*3, widthMargin])
-            .separation(separationFun);
-            update(root)
-        }
-
-        if(nodes > 160) {
-            // width and height, corrected for margins
-            var heightMargin = height - options.margin.top - options.margin.bottom,
-            widthMargin = width - options.margin.left - options.margin.right;
-
-            // Update the treemap to fit the new canvas size
-            treemap = d3.tree().size([heightMargin*4, widthMargin])
-            .separation(separationFun);
-            update(root)
-        }
+        update(root);
 
         // Hide the tooltip after clicking
-        tooltip.transition()
-        .duration(100)
-        .style('opacity', 0);
+        // tooltip.transition()
+        // .duration(100)
+        // .style('opacity', 0);
 
         // Update Shiny inputs, if applicable
         if (options.input) {
@@ -386,7 +366,7 @@ HTMLWidgets.widget({
         root.x0 = height / 2;
         root.y0 = 0;
         root._isSelected = true;
-        // root.collapsed = false;
+        root.collapsed = false;
 
         // Attach options as a property of the instance
         options = x.options;
@@ -406,7 +386,7 @@ HTMLWidgets.widget({
         // declares a tree layout and assigns the size
         treemap = d3.tree().size([heightMargin, widthMargin])
         .separation(separationFun);
-        update(root);
+        // update(root);
 
         // Calculate a reasonable link length, if not otherwise specified
         if (!options.linkLength) {
