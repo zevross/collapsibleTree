@@ -25,7 +25,7 @@ collapsibleTree.Node <- function(df, hierarchy_attribute = "level",
 
   # Deriving hierarchy variable from data.tree input
   hierarchy <- unique(data.tree::ToDataFrameTree(df, hierarchy_attribute)[[hierarchy_attribute]])
-  if(length(hierarchy) <= 1) stop("hierarchy vector must be greater than length 1")
+  if (length(hierarchy) <= 1) stop("hierarchy vector must be greater than length 1")
 
   # create a list that contains the options
   options <- list(
@@ -48,7 +48,7 @@ collapsibleTree.Node <- function(df, hierarchy_attribute = "level",
   # these are the fields that will ultimately end up in the json
   jsonFields <- NULL
 
-  if(fill %in% df$attributes) {
+  if (fill %in% df$attributes) {
     # fill in node colors based on column name
     df$Do(function(x) x$fill <- x[[fill]])
     jsonFields <- c(jsonFields, "fill")
@@ -58,9 +58,9 @@ collapsibleTree.Node <- function(df, hierarchy_attribute = "level",
   }
 
   # only necessary to perform these calculations if there is a tooltip
-  if(tooltip & is.null(tooltipHtml)) {
+  if (tooltip & is.null(tooltipHtml)) {
     t <- data.tree::Traverse(df, hierarchy_attribute)
-    if(substitute(identity)=="identity") {
+    if (substitute(identity) == "identity") {
       # for identity, leave the tooltips as is
       data.tree::Do(t, function(x) {
         x$WeightOfNode <- x[[attribute]]
@@ -76,35 +76,44 @@ collapsibleTree.Node <- function(df, hierarchy_attribute = "level",
       })
     }
     jsonFields <- c(jsonFields, "WeightOfNode")
-  }
 
   # if tooltipHtml is specified, pass it on in the data
-  if(tooltip & !is.null(tooltipHtml)) {
+  } else if (tooltip & !is.null(tooltipHtml)) {
     df$Do(function(x) x$tooltip <- x[[tooltipHtml]])
     jsonFields <- c(jsonFields, "tooltip")
   }
 
   # if collapsed is specified, pass it on in the data
-  if(is.character(collapsed)) jsonFields <- c(jsonFields, collapsed)
+  if (is.character(collapsed)) jsonFields <- c(jsonFields, collapsed)
 
   # only necessary to perform these calculations if there is a nodeSize specified
-  if(!is.null(nodeSize)) {
+  if (!is.null(nodeSize)) {
     # Scale factor to keep the median leaf size around 10
-    scaleFactor <- 10/data.tree::Aggregate(df, nodeSize, stats::median)
-    t <- data.tree::Traverse(df, hierarchy_attribute)
+    # scaleFactor <- 10/data.tree::Aggregate(df, nodeSize, stats::median)
+    # t <- data.tree::Traverse(df, hierarchy_attribute)
     # traverse down the tree and compute the size of each node
-    data.tree::Do(t, function(x) {
-      x$SizeOfNode <- data.tree::Aggregate(x, nodeSize, aggFun)
-      # scale node growth to area rather than radius and round
-      x$SizeOfNode <- round(x$SizeOfNode*scaleFactor*pi, 2) * 5
-    })
+    # data.tree::Do(t, function(x) {
+    #   x$SizeOfNode <- data.tree::Aggregate(x, nodeSize, aggFun)
+    #   # scale node growth to area rather than radius and round
+    #   x$SizeOfNode <- round(sqrt(x$SizeOfNode*scaleFactor*pi), 2) * 10
+    # })
+
+    df$Do(function(x) x$SizeOfNode <- round(sqrt(x$WeightOfNode*pi), 2))
+
+    # t$Do(function(x) x$SizeOfNode <- round(sqrt(x$WeightOfNode*scaleFactor*pi), 2) * 10)
+
     # update left margin based on new root size
-    options$margin$left <- options$margin$left + df$SizeOfNode - 10
+    hold_margin_left <- options$margin$left + df$SizeOfNode
+    if (hold_margin_left > 10) {
+      hold_margin_left <- hold_margin_left - 10
+    }
+
+    options$margin$left <- hold_margin_left
     jsonFields <- c(jsonFields, "SizeOfNode")
   }
 
   # keep only the JSON fields that are necessary
-  if(is.null(jsonFields)) jsonFields <- NA
+  if (is.null(jsonFields)) jsonFields <- NA
   data <- data.tree::ToListExplicit(df, unname = TRUE, keepOnly = jsonFields)
 
   # pass the data and options using 'x'
