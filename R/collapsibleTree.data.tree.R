@@ -27,22 +27,22 @@ collapsibleTree.Node <- function(
     if(!is.null(nodeSize)) if(!(nodeSize %in% c(df$attributes, nodeAttr))) stop("nodeSize column name is incorrect")
 
     # calculate the right and left margins in pixels
-    leftMargin <- nchar(root)
+    leftMargin <- 4L
+    # leftMargin <- nchar(root)
 
     # message("Before `rightLabelVector` ", Sys.time())
 
-    rightLabelVector <- df$Get("name", filterFun = function(x) x$level == df$height)
+    # rightLabelVector <- df$Get("name", filterFun = function(x) x$level == df$height)
 
-    # rightLabelVector <- readRDS(system.file("extdata", "rightLabelVector.RDS", package = "DEAP"))
+    # rightMargin <- max(purrr::map_dbl(rightLabelVector, nchar))
 
-    # message("Before `rightMargin` ", Sys.time())
-
-    rightMargin <- max(purrr::map_dbl(rightLabelVector, nchar))
+    rightMargin <- 123L
 
     # message("Before `ToDataFrameTree` ", Sys.time())
 
     # Deriving hierarchy variable from data.tree input
-    hierarchy <- unique(data.tree::ToDataFrameTree(df, hierarchy_attribute)[[hierarchy_attribute]])
+    hierarchy <- 1:df$height
+    # hierarchy <- unique(data.tree::ToDataFrameTree(df, hierarchy_attribute)[[hierarchy_attribute]])
 
     # message("After `ToDataFrameTree` ", Sys.time())
 
@@ -79,13 +79,20 @@ collapsibleTree.Node <- function(
     }
 
     # only necessary to perform these calculations if there is a tooltip
-    if (tooltip & is.null(tooltipHtml)) {
-      t <- data.tree::Traverse(df, hierarchy_attribute)
+    if (tooltip && is.null(tooltipHtml)) {
+
+      t <- data.tree::Traverse(df, hierarchy_attribute, filterFun = function(Node) !is.integer(Node$WeightOfNode))
+      # t <- data.tree::Traverse(df, hierarchy_attribute, filterFun = function(Node) !is.integer(Node$n))
       if (substitute(identity) == "identity") {
         # for identity, leave the tooltips as is
         data.tree::Do(t, function(x) {
           x$WeightOfNode <- x[[attribute]]
-        })
+          }#,
+          # filterFun = function(node) is.na(node$WeightOfNode)
+          # filterFun = function(x) is.na(x[[attribute]])
+        )
+        # df$Set(function(node) node$WeightOfNode <- node$n)
+
       } else {
         # traverse down the tree and compute the weights of each node for the tooltip
         data.tree::Do(t, function(x) {
@@ -119,7 +126,7 @@ collapsibleTree.Node <- function(
       #   x$SizeOfNode <- round(sqrt(x$SizeOfNode*scaleFactor*pi), 2) * 10
       # })
 
-      df$Do(function(x) x$SizeOfNode <- round(sqrt(x$WeightOfNode*pi), 2))
+      df$Do(function(x) x$SizeOfNode <- round(sqrt(x$WeightOfNode*pi), 2)) #, filterFun = !is.integer(SizeOfNode))
 
       # t$Do(function(x) x$SizeOfNode <- round(sqrt(x$WeightOfNode*scaleFactor*pi), 2) * 10)
 
