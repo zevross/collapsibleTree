@@ -47,6 +47,10 @@
 #' @param zoomable pan and zoom by dragging and scrolling
 #' @param width width in pixels (optional, defaults to automatic sizing)
 #' @param height height in pixels (optional, defaults to automatic sizing)
+#' @param default_tree Either `Boolean` (default: \code{FALSE}) or path to `RDS`
+#' file with default tree saved as \code{data.tree::ToListExplicit};
+#' checks whether rendering a default tree or on with different
+#' hierarchy/conditionally collapsed nodes
 #' @param ... other arguments to pass onto S3 methods that implement
 #' this generic function - \code{collapsibleTree.data.frame}, \code{collapsibleTree.Node}
 #' @examples
@@ -119,7 +123,8 @@ collapsibleTree <- function(df, ..., inputId = NULL, attribute = "leafCount",
                             aggFun = sum, fill = "lightsteelblue",
                             linkLength = NULL, fontSize = 10, tooltip = FALSE,
                             tooltipHtml = NULL,nodeSize = NULL, collapsed = TRUE,
-                            zoomable = TRUE, width = NULL, height = NULL
+                            zoomable = TRUE, width = NULL, height = NULL,
+                            default_tree = FALSE
                             ) {
   UseMethod("collapsibleTree")
 }

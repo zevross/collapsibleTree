@@ -27,7 +27,8 @@ collapsibleTree(
   collapsed = TRUE,
   zoomable = TRUE,
   width = NULL,
-  height = NULL
+  height = NULL,
+  default_tree = FALSE
 )
 
 \method{collapsibleTree}{data.frame}(
@@ -67,6 +68,7 @@ collapsibleTree(
   zoomable = TRUE,
   width = NULL,
   height = NULL,
+  default_tree = FALSE,
   ...
 )
 }
@@ -123,6 +125,11 @@ be used here (cumulative count of a node's children), or 'count'
 \item{width}{width in pixels (optional, defaults to automatic sizing)}
 
 \item{height}{height in pixels (optional, defaults to automatic sizing)}
+
+\item{default_tree}{Either `Boolean` (default: \code{FALSE}) or path to `RDS`
+file with default tree saved as \code{data.tree::ToListExplicit};
+checks whether rendering a default tree or on with different
+hierarchy/conditionally collapsed nodes}
 
 \item{hierarchy}{a character vector of column names that define the order
 and hierarchy of the tree network. Applicable only for \code{data.frame} input.}
