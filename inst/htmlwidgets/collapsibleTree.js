@@ -386,7 +386,7 @@ HTMLWidgets.widget({
         // declares a tree layout and assigns the size
         treemap = d3.tree().size([heightMargin, widthMargin])
         .separation(separationFun);
-        // update(root);
+        update(root);
 
         // Calculate a reasonable link length, if not otherwise specified
         if (!options.linkLength) {
