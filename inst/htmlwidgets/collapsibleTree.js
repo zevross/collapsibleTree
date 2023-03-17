@@ -380,7 +380,9 @@ HTMLWidgets.widget({
           .style('opacity', 0);
 
         // width and height, corrected for margins
-        var heightMargin = height - options.margin.top - options.margin.bottom,
+        // heightMargin = height - options.margin.top - options.margin.bottom,
+        // var heightMargin = height - options.margin.top - options.margin.bottom,
+        heightMargin = height - options.margin.top - options.margin.bottom,
         widthMargin = width - options.margin.left - options.margin.right;
 
         // declares a tree layout and assigns the size
