@@ -145,7 +145,7 @@ collapsibleTree.Node <- function(
 
     # message("Before `ToListExplicit` ", Sys.time())
 
-    data <- data.tree::ToListExplicit(df, unname = TRUE, keepOnly = jsonFields)
+    data <- data.tree::ToListExplicit(df, unname = TRUE, keepOnly = jsonFields, rootName = root)
 
     # pass the data and options using 'x'
     x <- list(
