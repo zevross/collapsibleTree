@@ -707,10 +707,12 @@ HTMLWidgets.widget({
 
           // svg.call(zoom.transform, center);
 
-          svg.call(zoom).call(zoom.transform, d3.zoomIdentity.translate(width/2, 0).scale(1));
+          // svg.call(zoom).call(zoom.transform, d3.zoomIdentity.translate(width/2, 0).scale(1));
 
-          // svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
+          svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
         }
+
+        centerNode(root);
 
         update(root, false);
       },
