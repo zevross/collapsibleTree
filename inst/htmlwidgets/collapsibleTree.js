@@ -9,9 +9,6 @@ HTMLWidgets.widget({
       options = {},
       newnest = {},
       treemap;
-      // transform = d3.zoomIdentity;
-
-    // var transform = d3.zoomIdentity;
 
     // Optionally enable zooming, and limit to 1/5x or 5x of the original viewport
     var zoom = d3
@@ -19,21 +16,6 @@ HTMLWidgets.widget({
       .interpolate(d3.interpolate)
       .scaleExtent([1 / 5, 5])
       .on("zoom", zoomed);
-    // .on('zoom', function () {
-    //     if (
-    //       d3.event.sourceEvent &&
-    //       d3.event.sourceEvent.type == "wheel" &&
-    //       d3.event.sourceEvent.target.nodeName == "circle"
-    //     ) {
-    //       event.stopPropagation();
-    //     } else {
-
-    //       // debugger;
-
-    //       // svg.attr("transform", d3.event.transform);
-    //       g.attr("transform", d3.event.transform);
-    //     }
-    //   });
 
     // create our tree object and bind it to the element
     var svg = d3
@@ -53,17 +35,9 @@ HTMLWidgets.widget({
       .style("pointer-events", "all")
       .call(zoom);
 
-
     var g = svg.append("g");
-      // .attr("transform", function(d) {
-      //   return "translate(" +
-      //     (widthMargin) + "," + (heightMargin) + ") scale(" + scale + ")";
-      // });
-
-    // zoom.scaleTo(svg, 2);
 
     function zoomed() {
-
           if (
             d3.event.sourceEvent &&
             d3.event.sourceEvent.type == "wheel" &&
@@ -108,7 +82,6 @@ HTMLWidgets.widget({
           );
         });
     }
-
 
     // .on("mousedown.zoom", // console('Zoom 1'))
     // .on("touchstart.zoom", // console('Zoom 2'))
@@ -234,8 +207,6 @@ HTMLWidgets.widget({
         .append("g")
         .attr("class", "node")
         .attr("transform", function (d) {
-          // // console('d:');
-          // // console(d);
           return "translate(" + source.y0 + "," + source.x0 + ")";
         })
         .on("mousedown", function (d) {
@@ -457,9 +428,6 @@ HTMLWidgets.widget({
           d._isSelected = false;
         }
 
-        // // console("`click(d) & d:");
-        // // console(d);
-
         if (d.height > 0) {
           // toggle children
           if (d.children) {
@@ -479,29 +447,6 @@ HTMLWidgets.widget({
           } else {
             d.data.collapsed = true;
           }
-
-          // debugger;
-
-          // var t = d3.zoomTransform(g.node());
-          // // var t = d3.zoomTransform(svg.node());
-          // var x = -source.y0;
-          // var y = -source.x0;
-          // var new_x = x * t.k + width / 6;
-          // var new_y = y * t.k + height / 2;
-
-          // // console(d3.event);
-
-          // g.transition()
-          //   .duration(750)
-          //   // .attr("transform", `translate(${ new_x },${ new_y })scale(${ t.k })`);
-          //   .attr("transform", `translate(${-d.x},${-d.y / 2})`);
-
-          // zoom.scaleTo(svg, t.k);
-
-          // svg.call(zoom.translateBy, -d.x / 2, 0);
-
-
-          // svg.transition().duration(750).call(zoom.translateTo, d.x, d.y);
 
           centerNode(source);
         }
@@ -569,7 +514,6 @@ HTMLWidgets.widget({
           d._isSelected === null ||
           d._isSelected === undefined
         ) {
-          // // console(this);
           d3.select(this)
             .select("text.node-text")
             .style("font-size", "12px")
@@ -718,8 +662,6 @@ HTMLWidgets.widget({
       },
 
       resize: function (width, height) {
-        // // console("RESIZE");
-
         // Resize the canvas
         d3.select(el)
           .select("svg")
@@ -749,15 +691,12 @@ HTMLWidgets.widget({
       // Make the instance properties available as a property of the widget
       svg: svg,
       root: root,
-      options: options,
+      options: options
     };
   }
 });
 
 function separationFun(a, b) {
-
-  // // console("SeparationFun\n");
-
   var height = Math.sqrt(a.data.SizeOfNode) + Math.sqrt(b.data.SizeOfNode),
   // Scale distance to SizeOfNode, if defined
   distance = (height)/25; // increase denominator for better spacing in DEAP app
@@ -767,6 +706,5 @@ function separationFun(a, b) {
   if (distance > 1.5) {
     distance = 1.5
   }
-  //// console(distance);
   return (a.parent === b.parent ? distance : 1);
 };
