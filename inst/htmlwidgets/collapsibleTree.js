@@ -26,51 +26,33 @@ HTMLWidgets.widget({
       .attr("width", width)
       .attr("height", height);
       // .call(zoom);
-    // .append('g');
+      // .append('g');
 
     var zoomer = svg.append("rect")
       .attr("width", width)
       .attr("height", height)
       .style("fill", "none")
-      .style("pointer-events", "all")
+      .style("pointer-events", "all") //;
       .call(zoom);
 
     var g = svg.append("g");
 
     function zoomed() {
-          if (
-            d3.event.sourceEvent &&
-            d3.event.sourceEvent.type == "wheel" &&
-            d3.event.sourceEvent.target.nodeName == "circle"
-          ) {
-            event.stopPropagation();
-          } else {
-            g.attr("transform", d3.event.transform);
-          }
-
-      // // console(d3.event);
-
-      // g.attr("transform", d3.event.transform);
+      if (
+        d3.event.sourceEvent &&
+        d3.event.sourceEvent.type == "wheel" &&
+        d3.event.sourceEvent.target.nodeName == "circle"
+      ) {
+        event.stopPropagation();
+      } else {
+        g.attr("transform", d3.event.transform);
+      }
     }
 
     function centerNode(source) {
       t = d3.zoomTransform(zoomer.node());
-      // // console("t:");
-      // // console(t);
-
-      // // var t = d3.zoomTransform(svg.node());
-      // var x = ;
-      // var y = ;
       x = -source.y0 * t.k + width / 6;
       y = -source.x0 * t.k + height / 2;
-
-      // debugger;
-
-      // x = -t.x;
-      // y = source.x0;
-      // y = (-y * t.k) / 2;
-
-      // y = -t.y; // * t.k + height / 2;
 
       g.transition()
         .duration(duration)
@@ -127,16 +109,11 @@ HTMLWidgets.widget({
         .attr("cy", (d.y = d3.event.y));
     }
 
-    // svg.call(zoom.transform, center);
-
     if (options.zoomable) {
-      // svg.call(zoom.transform, d3.zoomIdentity.scale(1));
-      // svg.call(zoom.transform, center);
+      svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
 
       // d3.select(el).select("svg").call(zoom);
-
       // d3.select(el).select("svg").call(zoom, center);
-      svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
     }
 
     d3.select("svg")
@@ -172,6 +149,10 @@ HTMLWidgets.widget({
 
     function update(source, animate) {
       // Assigns the x and y position for the nodes
+
+      // TODO:
+      //  - CONFIRM the below fixes inital render filter!!!!
+      // var treeData = treemap(source);
       var treeData = treemap(root);
 
       // Compute the new tree layout.
@@ -179,7 +160,7 @@ HTMLWidgets.widget({
         links = treeData.descendants().slice(1);
 
       // Normalize for fixed-depth.
-      nodes.forEach(function (d) {
+      nodes.forEach(function(d) {
         d.y = d.depth * options.linkLength;
       });
 
@@ -273,14 +254,14 @@ HTMLWidgets.widget({
       nodeUpdate
         .transition()
         .duration(animate ? duration : 0)
-        .attr("transform", function (d) {
+        .attr("transform", function(d) {
           return "translate(" + d.y + "," + d.x + ")";
         });
 
       // Update the node attributes and style
       nodeUpdate
         .select("circle.node")
-        .style("fill", function (d) {
+        .style("fill", function(d) {
           if (d._isSelected === true) {
             return options.fill;
           } else {
@@ -345,7 +326,7 @@ HTMLWidgets.widget({
       var link = g
         .selectAll("path.link")
         // var link = svg.selectAll('path.link')
-        .data(links, function (d) {
+        .data(links, function(d) {
           return d.id;
         });
 
@@ -368,7 +349,7 @@ HTMLWidgets.widget({
       linkUpdate
         .transition()
         .duration(animate ? duration : 0)
-        .attr("d", function (d) {
+        .attr("d", function(d) {
           return diagonal(d, d.parent);
         });
 
@@ -378,14 +359,14 @@ HTMLWidgets.widget({
         .transition()
         // var linkExit = link.exit().transition()
         .duration(duration)
-        .attr("d", function (d) {
+        .attr("d", function(d) {
           var o = { x: source.x, y: source.y };
           return diagonal(o, o);
         })
         .remove();
 
       // Store the old positions for transition.
-      nodes.forEach(function (d) {
+      nodes.forEach(function(d) {
         d.x0 = d.x;
         d.y0 = d.y;
       });
@@ -401,18 +382,16 @@ HTMLWidgets.widget({
       newnest = nodes
         .filter(
           (nodes) =>
-            {
-              return nodes.depth > 0 &&
-                (nodes._isSelected === true || nodes.data.collapsed === false);
-            }
+            nodes.depth > 0 &&
+          (nodes._isSelected === true || nodes.data.collapsed === false)
         )
-        .map(function (nd) {
-          return {
+        .map((nd) => {
+          return ({
             id: nd.root_id,
             parent: nd.parent.data.name,
             level: options.hierarchy[nd.depth - 1],
-            value: nd.data.name,
-          };
+            value: nd.data.name
+          });
         });
 
       // Toggle children on click.
@@ -560,41 +539,40 @@ HTMLWidgets.widget({
     }
 
     return {
-      renderValue: function (x) {
+      renderValue: function(x) {
         // Assigns parent, children, height, depth
-        root = d3.hierarchy(x.data, function (d) {
+        root = d3.hierarchy(x.data, function(d) {
           return d.children;
         });
         root.x0 = height / 2;
-        // root.x0 = 0;
         root.y0 = 0;
-        // root.y0 = width / 2;
         root._isSelected = true;
+        // root.collapsed = false;
         root.collapsed = true;
 
         // Attach options as a property of the instance
         options = x.options;
 
         // Update the canvas with the new dimensions
-        // g = g.attr(
-        //   // g = g.attr(
-        //   // svg = svg.attr(
-        //   "transform",
-        //   "translate(" + options.margin.left + "," + options.margin.top + ")"
-        // );
+        g = g.attr(
+          // svg = svg.attr(
+          "transform",
+          "translate(" + options.margin.left + "," + options.margin.top + ")"
+        );
+
 
         tooltip = tooltip.attr("class", "tooltip").style("opacity", 0);
 
         // width and height, corrected for margins
-        (heightMargin = height - options.margin.top - options.margin.bottom),
-          (widthMargin = width - options.margin.left - options.margin.right);
+        var heightMargin = height - options.margin.top - options.margin.bottom,
+          widthMargin = width - options.margin.left - options.margin.right;
 
         // declares a tree layout and assigns the size
         treemap = d3
           .tree()
           .size([heightMargin, widthMargin])
           .separation(separationFun);
-        // update(root);
+        // update(root, false);
 
         // Calculate a reasonable link length, if not otherwise specified
         if (!options.linkLength) {
@@ -607,7 +585,7 @@ HTMLWidgets.widget({
 
         // Optionally collapse after the second level
         if (options.collapsed) root.children.forEach(collapse);
-        // update(root);
+        update(root, false);
 
         // Collapse the node and all it's children
         function collapse(d) {
@@ -633,13 +611,7 @@ HTMLWidgets.widget({
             d._children.forEach(collapse);
             d.children = null;
           }
-
-          // update(d);
         }
-
-        Shiny.setInputValue(options.input, JSON.stringify(newnest), {
-          priority: "event",
-        });
 
         // d3.select("svg").call(zoom);
         if (options.zoomable) {
@@ -653,12 +625,16 @@ HTMLWidgets.widget({
 
           // svg.call(zoom).call(zoom.transform, d3.zoomIdentity.translate(width/2, 0).scale(1));
 
-          svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
+          svg.call(zoom); //.call(zoom.transform, d3.zoomIdentity);
         }
 
         centerNode(root);
 
         update(root, false);
+
+        Shiny.setInputValue(options.input, JSON.stringify(newnest), {
+          priority: "event",
+        });
       },
 
       resize: function (width, height) {
