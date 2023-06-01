@@ -4,7 +4,6 @@ HTMLWidgets.widget({
   factory: function(el, width, height) {
     var i = 0,
       duration = 750,
-      scale = 1,
       root = {},
       options = {},
       newnest = {},
@@ -346,8 +345,7 @@ HTMLWidgets.widget({
       var linkUpdate = linkEnter.merge(link);
 
       // Transition back to the parent element position
-      linkUpdate
-        .transition()
+      linkUpdate.transition()
         .duration(animate ? duration : 0)
         .attr("d", function(d) {
           return diagonal(d, d.parent);
@@ -568,8 +566,7 @@ HTMLWidgets.widget({
           widthMargin = width - options.margin.left - options.margin.right;
 
         // declares a tree layout and assigns the size
-        treemap = d3
-          .tree()
+        treemap = d3.tree()
           .size([heightMargin, widthMargin])
           .separation(separationFun);
         // update(root, false);
@@ -658,8 +655,7 @@ HTMLWidgets.widget({
         }
 
         // Update the treemap to fit the new canvas size
-        treemap = d3
-          .tree()
+        treemap = d3.tree()
           .size([heightMargin, widthMargin])
           .separation(separationFun);
         update(root, false);
