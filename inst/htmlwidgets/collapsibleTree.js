@@ -401,8 +401,10 @@ HTMLWidgets.widget({
           d._isSelected === undefined
         ) {
           d._isSelected = true;
+          d.data.collapsed = false;
         } else {
           d._isSelected = false;
+          d.data.collapsed = true;
         }
 
         if (d.height > 0) {
@@ -415,18 +417,21 @@ HTMLWidgets.widget({
             d._children = null;
           }
 
-          // toggle `collapsed`
-          if (d.data.collapsed === false) {
-            // if (d.data.collapsed === false || d.data.collapsed === null) {
-            d.data.collapsed = true;
-          } else if (d.data.collapsed === true) {
-            d.data.collapsed = false;
-          } else {
-            d.data.collapsed = true;
-          }
-
           centerNode(source);
         }
+
+          // toggle `collapsed`
+          // if (d.data.collapsed === false) {
+          //   // if (d.data.collapsed === false || d.data.collapsed === null) {
+          //   d.data.collapsed = true;
+          // } else if (d.data.collapsed === true) {
+          //   d.data.collapsed = false;
+          // } else {
+          //   d.data.collapsed = true;
+          // }
+
+          // centerNode(source);
+        // }
 
         update(d, true);
 
@@ -439,7 +444,7 @@ HTMLWidgets.widget({
         }
 
         // width and height, corrected for margins
-        var heightMargin = height - options.margin.top - options.margin.bottom,
+        heightMargin = height - options.margin.top - options.margin.bottom,
           widthMargin = width - options.margin.left - options.margin.right;
 
         if (nodes < 35) {
@@ -545,8 +550,8 @@ HTMLWidgets.widget({
         root.x0 = height / 2;
         root.y0 = 0;
         root._isSelected = true;
-        // root.collapsed = false;
-        root.collapsed = true;
+        root.collapsed = false;
+        // root.collapsed = true;
 
         // Attach options as a property of the instance
         options = x.options;
@@ -586,14 +591,17 @@ HTMLWidgets.widget({
 
         // Collapse the node and all it's children
         function collapse(d) {
-          if (d.depth > 1) {
+          if (d.depth > 0) {
+          // if (d.depth > 1) {
             d.root_id = d.parent.root_id;
           } else {
+            d.id = 1;
             d.root_id = d.id;
           }
 
           // A collapsed data value was specified and is true
           if (
+            // (d.children || d.height == 0) &&
             d.children &&
             options.collapsed in d.data &&
             !d.data[options.collapsed]
@@ -607,6 +615,10 @@ HTMLWidgets.widget({
             d._children = d.children;
             d._children.forEach(collapse);
             d.children = null;
+          } else if (d.data[options.collapsed] === false && d.height == 0) {
+            d._isSelected = true;
+          } else if (d.data[options.collapsed] === true && d.height == 0) {
+            d._isSelected = false;
           }
         }
 
