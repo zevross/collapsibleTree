@@ -307,8 +307,8 @@ HTMLWidgets.widget({
       var nodeExit = node
         .exit()
         .transition()
-        .duration(duration)
-        .attr("transform", function (d) {
+        .duration(animate ? duration : 0)
+        .attr("transform", function(d) {
           return "translate(" + source.y + "," + source.x + ")";
         })
         .remove();
@@ -356,7 +356,7 @@ HTMLWidgets.widget({
         .exit()
         .transition()
         // var linkExit = link.exit().transition()
-        .duration(duration)
+        .duration(animate ? duration : 0)
         .attr("d", function(d) {
           var o = { x: source.x, y: source.y };
           return diagonal(o, o);
@@ -485,7 +485,7 @@ HTMLWidgets.widget({
       }
 
       // Show tooltip on mouseover
-      function mouseover(d, i) {
+      function mouseover(d) {
         if (
           d._isSelected === false ||
           d._isSelected === null ||
@@ -518,7 +518,7 @@ HTMLWidgets.widget({
       }
 
       // Hide tooltip on mouseout
-      function mouseout(d, i) {
+      function mouseout(d) {
         if (
           d._isSelected === false ||
           d._isSelected === null ||
